@@ -1,12 +1,15 @@
 package enp_count;
 
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.DriverManager;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static enp_count.App.url;
+import static enp_count.App.user;
 
 class SimpleGUI extends JFrame {
 
@@ -17,6 +20,7 @@ class SimpleGUI extends JFrame {
     private JTextField input1 = new JTextField("", 5);
     private JTextField input2 = new JTextField("71140", 5);
     private JTextArea input3;
+    private JTextField password = new JTextField("N0vusadm", 1);
     private JTextField inputNameFile = new JTextField(5);
     private JLabel label1 = new JLabel("  На дату( Например 2017/01/01):");
     private JLabel label2 = new JLabel("  Номер региона");
@@ -88,7 +92,6 @@ class SimpleGUI extends JFrame {
                 labelStatus.setText("                         Статус: идет формирование");
                 labelStatus.invalidate();
                 thread.start();
-
             }
         });
         this.buttonStop.addActionListener(new ActionListener() {
@@ -110,6 +113,7 @@ class SimpleGUI extends JFrame {
     }
 
     public SimpleGUI(int w, String sql) {
+
         super("sql");
         final JTextArea input3 = new JTextArea(App.sql);
         this.setBounds(100, 100, 630, 630);
@@ -133,6 +137,42 @@ class SimpleGUI extends JFrame {
         this.setPreferredSize(new Dimension(550, 600));
     }
 
+    public SimpleGUI(String pas, boolean conRes) {
+        super("Пароль пользователя");
+        this.setBounds((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2,
+                (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2,
+                350, 60);
+        this.setDefaultCloseOperation(3);
+        this.setResizable(false);
+        Container container = this.getContentPane();
+        container.setLayout(new GridLayout(1, 2, 1, 2));
+        container.add(this.password);
+        container.add(this.buttonSAVE);
+        this.buttonSAVE.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                checkConnect(password.getText());
+            }
+        });
+        password.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    checkConnect(password.getText());
+                }}
+            });
+    }
+public void checkConnect(String pas) {
+    try {
+        App.con = DriverManager.getConnection(url, user, pas);
+        SimpleGUI.this.dispose();
+        SimpleGUI app = new SimpleGUI(App.sql);
+        app.setVisible(true);
+    } catch (Exception conExep) {
+        System.out.println(conExep.getLocalizedMessage());
+        JOptionPane.showMessageDialog((Component) null, conExep.getLocalizedMessage().toString());
+    }
+}
+
+
     public String getter1() {
         return this.input1.getText().toString();
     }
@@ -145,5 +185,11 @@ class SimpleGUI extends JFrame {
         return this.inputNameFile.getText().toString();
     }
 
+    public JTextField getPassword() {
+        return password;
+    }
 
+    public void setPassword(JTextField password) {
+        this.password = password;
+    }
 }

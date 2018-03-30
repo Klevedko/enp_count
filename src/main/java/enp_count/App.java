@@ -28,26 +28,23 @@ public class App {
 
     public static String url = "jdbc:jtds:sqlserver://10.255.160.75;databaseName=FOMS_CENTER_REVISION;integratedSecurity=true;Domain=GISOMS";
     public static String user = "Apatronov";
-    public static String password = "N0vusadm7";
     public static Connection con = null;
     public static long start;
     public static long end;
 
     public static void main(String[] args) {
-        SimpleGUI app = new SimpleGUI(sql);
-        app.setVisible(true);
+        SimpleGUI appPassw = new SimpleGUI("" , false);
+        appPassw.setVisible(true);
     }
 
     public static void go(String date1, String FileName, String territory) {
         try {
-            con = DriverManager.getConnection(url, user, password);
             PrepareInsert(con, FileName, date1, territory);
             long diff = (end - start) / 1000;
             SimpleGUI.labelStatus.setText("                         Статус: готово");
             SimpleGUI.buttonStop.setEnabled(false);
             SimpleGUI.buttonGo.setEnabled(true);
             JOptionPane.showMessageDialog((Component) null, "Отчет\n" + FileName + ".xlsx \nсоздан в " + System.getProperty("user.dir") + "\\Отчеты ЕНП\\" + "\nДлительность = " + diff + "сек.", "Output", -1);
-
             SimpleGUI.labelStatus.invalidate();
 
         } catch (Exception var8) {
